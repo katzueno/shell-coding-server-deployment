@@ -11,10 +11,11 @@ e.g.) sh setup_cooding.sh coding PROJ test master coding 123456 ABCDEFG123456
 
 ## Parameters
 
-$1 [SUBDOMAIN]
-$2 [Backlog Proj Name]
-$3 [GIT Name]
-$4 [BRANCH]
-$5 [BASIC AUTH USERNAME]
-$6 [PASSWORD]
-$7 [DEPLOY KEY]
+---|------------
+$1 | [SUBDOMAIN]
+$2 | [Backlog Proj Name]
+$3 | [GIT Name]
+$4 | [BRANCH]
+$5 | [BASIC AUTH USERNAME]
+$6 | [PASSWORD]
+$7 | [DEPLOY KEY]

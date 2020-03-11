@@ -6,6 +6,7 @@ USE IT AT YOUR OWN RISK!
 ## COMMAND Options
 
 sh setup_cooding.sh [SUBDOMAIN] [Backlog Proj Name] [GIT Name] [BRANCH] [BASIC AUTH USERNAME] [PASSWORD] [DEPLOY KEY]
+
 e.g.) sh setup_cooding.sh coding PROJ test master coding 123456 ABCDEFG123456
 
 ## Parameters

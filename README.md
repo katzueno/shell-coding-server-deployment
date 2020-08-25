@@ -1,4 +1,4 @@
-# shell-conding-server-deployment
+# shell-coding-server-deployment
 Shell script to automate coding check environment with php auto deploy
 
 USE IT AT YOUR OWN RISK!

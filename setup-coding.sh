@@ -7,15 +7,15 @@
 
 # INSTRUCTION:
 # ----------
-# https://github.com/katzueno/shell-conding-server-deployment
+# https://github.com/katzueno/shell-coding-server-deployment
 
 # USE IT AT YOUR OWN RISK!
 
 # ----------
 # COMMAND Options
 # ----------
-# sh setup_cooding.sh [SUBDOMAIN] [Backlog Proj Name] [GIT Name] [BRANCH] [BASIC AUTH USERNAME] [PASSWORD] [DEPLOY KEY]
-# e.g.) sh setup_cooding.sh coding PROJ test master coding 123456 ABCDEFG123456
+# sh setup_cooding.sh [SUBDOMAIN] [Backlog Proj Name] [GIT Name] [BRANCH] [BASIC AUTH USERNAME] [PASSWORD] [DEPLOY KEY] [NPM OPTION]
+# e.g.) sh setup_cooding.sh coding PROJ test master coding 123456 ABCDEFG123456 tailwind
 
 # $1 [SUBDOMAIN]
 # $2 [Backlog Proj Name]
@@ -40,6 +40,7 @@ BRANCH=$4
 BASICAUTH_USERNAME=$5
 BASICAUTH_PASSWORD=$6
 DEPLOY_KEY=$7
+NPM_OTION=$8
 
 
 # --------------------
@@ -92,6 +93,7 @@ show_main_menu()
   echo "# PHP Deployment"
   echo "Deploy PHP:  ${GIT_DEPLOY_URL}"
   echo "Deploy Key:  ${DEPLOY_KEY}"
+  echo "NPM Option:  ${NPM_OTION}"
   echo " -- -- -- -- -- -- -- -- -- -- --"
   echo "[y]. Proceed?"
   echo "[q]. Quit?"
@@ -109,6 +111,7 @@ do_main_menu()
     case "$yesno" in [yY]*) ;; *) echo "Sorry, see you soon!" ; exit ;; esac
     do_create
     do_route53
+    do_tailwind
     show_wiki
     echo "---------------------------"
     echo "---      Complete!      ---"
@@ -145,8 +148,13 @@ do_create() {
     sudo cp ${DIR_NGINX_CONF}00000000_vhost_test.${MAIN_DOMAIN}.conf.template ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
     
     # STEP 4: Setting up Nginx Config
-    echo "**NOW** Setting up Nginx Config"
-    sudo sed -i "s/SUBDOMAIN.${MAIN_DOMAIN}/${SUBDOMAIN}.${MAIN_DOMAIN}/g" ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
+    if [ "${NPM_OTION}" = "tailwind" ];\ then        echo "**NOW** Setting up Nginx Config for Tailwind"
+    ## Add /dist to web root folder for tailwind
+        sudo sed -i "s/SUBDOMAIN.${MAIN_DOMAIN}/${SUBDOMAIN}.${MAIN_DOMAIN}${DIR_TAILWIND_PUB}/g" ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
+    else
+        echo "**NOW** Setting up Nginx Config"
+        sudo sed -i "s/SUBDOMAIN.${MAIN_DOMAIN}/${SUBDOMAIN}.${MAIN_DOMAIN}/g" ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
+    fi
     
     # STEP 5: Restarting Nginx
     echo "**NOW** Restarting Nginx"
@@ -237,6 +245,8 @@ else
 fi
 }
 
+
+
 # --------------------
 # Function: Create Markdown for Wiki
 # --------------------
@@ -259,8 +269,9 @@ https://${SUBDOMAIN}.${MAIN_DOMAIN}/
 
 ----|------
 連携 Git | ${GIT_WEB}
-連携 Branch | ${GIT_NAME}
-reset hard | あり
+連携 Branch | ${BRANCH}
+Reset hard | あり
+NPM Option | ${NPM_OTION}
 自動デプロイスクリプト| ${GIT_DEPLOY_URL}
 
 * deploy script does not change branch, you must git checkout on the server directly

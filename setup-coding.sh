@@ -183,6 +183,9 @@ do_create() {
 # Function: Register subdomain to DNS zone via Route 53
 # --------------------
 do_route53() {
+echo "**NOW** Checking If Route53 parameters are not empty"
+if [ -n "${AWS_HOSTED_ZONE}" ] && [ -n "${AWS_EIP}" ]; then
+echo "**NOW** Creating route53.json file"
 ROUTE53_JSON=$(cat << EOS
 {
     "Comment": "CREATE/DELETE/UPSERT a record ",
@@ -199,9 +202,40 @@ EOS
 )
 cd ${DIR_CURRENT}
 echo ${ROUTE53_JSON} > route53.json
+echo "**NOW** Applying Route53 Change"
 aws route53 change-resource-record-sets --hosted-zone-id ${AWS_HOSTED_ZONE} --change-batch file://route53.json
+else
+  echo "Skipping Route53 Registration"
+fi
 }
 
+# --------------------
+# Function: Install & Build Tailwind CSS
+# --------------------
+do_tailwind(){
+echo "**NOW** Checking if NPM option is tailwind"
+if [ "${NPM_OTION}" = "tailwind" ]; then
+echo "**NOW** Creating post-merge file for Tailwind CSS"
+POST_MERGE=$(cat << EOS
+#!/bin/bash
+cd ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}
+echo 'npm-installing'
+npm install -D
+echo 'npm-building:'
+npm run build
+EOS
+)
+cd ${DIR_CURRENT}
+echo -e ${POST_MERGE} > post-merge
+echo "**NOW** Copying post-merge file to git hook"
+sudo cp post-merge ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}/.git/hooks/
+sudo chown ${DIR_OWNER} ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}/.git/hooks/post-merge
+echo "**NOW** Execute initial npm build"
+sudo -u ${WEB_USER} sh ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}/.git/hooks/post-merge
+else
+  echo "Skipping Tailwind"
+fi
+}
 
 # --------------------
 # Function: Create Markdown for Wiki

@@ -148,8 +148,9 @@ do_create() {
     sudo cp ${DIR_NGINX_CONF}00000000_vhost_test.${MAIN_DOMAIN}.conf.template ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
     
     # STEP 4: Setting up Nginx Config
-    if [ "${NPM_OTION}" = "tailwind" ];\ then        echo "**NOW** Setting up Nginx Config for Tailwind"
-    ## Add /dist to web root folder for tailwind
+    if [ "${NPM_OTION}" = "tailwind" ]; then
+        echo "**NOW** Setting up Nginx Config for Tailwind"
+        ## Add /dist to web root folder for tailwind
         sudo sed -i "s/SUBDOMAIN.${MAIN_DOMAIN}/${SUBDOMAIN}.${MAIN_DOMAIN}${DIR_TAILWIND_PUB}/g" ${DIR_NGINX_CONF}$(date "+%Y%m%d")_vhost_${SUBDOMAIN}.${MAIN_DOMAIN}.conf
     else
         echo "**NOW** Setting up Nginx Config"

@@ -54,15 +54,18 @@ MAIN_BASICAUTH_PASS="PASSWORD"
 DIR_VHOST="/var/www/vhosts/"
 DIR_CURRENT="/var/www/vhosts/shell/"
 DIR_NGINX_CONF="/etc/nginx/conf.d/"
+DIR_WEBROOT="${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}"
 DIR_OWNER="nginx:nginx"
 WEB_USER="nginx"
+DIR_TAILWIND_PUB="/dist"
 
 # AWS Related Info
+## Make these string null or empty if you don't want to execute Route53 changes
 AWS_HOSTED_ZONE="ZXXXXXXXXXXXXXXX"
 AWS_EIP="192.169.XXX.XXX"
 
 # Backlog
-BACKLOG_SPACE="XXXXXXXXX
+BACKLOG_SPACE="XXXXXXXXX"
 
 # Wiki Deploy PHP Location
 GIT_DEPLOY_URL="https://${BACKLOG_SPACE}.backlog.jp/git/XXXXX/XXXXXXXXXXXXXXX/blob/master/${SUBDOMAIN}.php"
@@ -225,17 +228,14 @@ do_tailwind(){
 echo "**NOW** Checking if NPM option is tailwind"
 if [ "${NPM_OTION}" = "tailwind" ]; then
 echo "**NOW** Creating post-merge file for Tailwind CSS"
-POST_MERGE=$(cat << EOS
-#!/bin/bash
+POST_MERGE="#!/bin/bash
 cd ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}
 echo 'npm-installing'
 npm install -D
 echo 'npm-building:'
-npm run build
-EOS
-)
+npm run build"
 cd ${DIR_CURRENT}
-echo -e ${POST_MERGE} > post-merge
+echo -e "${POST_MERGE}" > post-merge
 echo "**NOW** Copying post-merge file to git hook"
 sudo cp post-merge ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}/.git/hooks/
 sudo chown ${DIR_OWNER} ${DIR_VHOST}${SUBDOMAIN}.${MAIN_DOMAIN}/.git/hooks/post-merge
@@ -264,7 +264,7 @@ Wiki Document Server/Coding
 |:- | :- |
 | ${BASICAUTH_USERNAME} | ${BASICAUTH_PASSWORD} |
 
-https://${SUBDOMAIN}.${MAIN_DOMAIN}/
+http://${SUBDOMAIN}.${MAIN_DOMAIN}/
 
 # Git 連携
 
